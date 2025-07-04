@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Левая колонка -->
+        <div class="col-md-4">
+            <div class="card neumorphic-card mb-4">
+                <div class="profile-main">
+                    <img src="{{ user.profile.image.url }}" 
+                         class="rounded-circle mb-3" 
+                         width="300" height="300"
+                         alt="Аватар">
+                    
+                    <h3 class="mb-1">{{ user.username }}</h3>
+                    {% if user.first_name or user.last_name %}
+                    <p class="text-muted">{{ user.first_name }} {{ user.last_name }}</p>
+                    {% endif %}
+                    
+                    <a href="{% url 'profile_edit' %}" class="btn btn-primary btn-sm mt-2">
+                        Редактировать профиль
+                    </a>
+                    
+                    {% if user.profile.bio %}
+                    <div class="mt-3 text-left">
+                        <p>{{ user.profile.bio }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Социальные сети -->
+            <div class="card neumorphic-card">
+                <div class="card-body">
+                    <h5 class="card-title">Социальные сети</h5>
+                    <div class="social-accounts">
+                        <!-- GitHub -->
+                        {% if user.profile.github %}
+                        <a href="{{ user.profile.github }}" target="_blank" class="social-account">
+                            <img src="{% static 'images/icons/github-icon.png' %}" alt="GitHub" width="32" height="32">
+                            <span class="account-username">
+                                {{ user.profile.github|cut:"https://github.com/" }}
+                            </span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- VK -->
+                        {% if user.profile.vk %}
+                        <a href="{{ user.profile.vk }}" target="_blank" class="social-account">
+                            <img src="{% static 'images/icons/vk-icon.png' %}" alt="VK" width="32" height="32">
+                            <span class="account-username">
+                                {{ user.profile.vk|cut:"https://vk.com/" }}
+                            </span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Telegram -->
+                        {% if user.profile.telegram %}
+                        <a href="https://t.me/{{ user.profile.telegram|cut:'@' }}" target="_blank" class="social-account">
+                            <img src="{% static 'images/icons/telegram-icon.png' %}" alt="Telegram" width="32" height="32">
+                            <span class="account-username">
+                                {{ user.profile.telegram|cut:"@" }}
+                            </span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Discord (не кликабельный) -->
+                        {% if user.profile.discord %}
+                        <div class="social-account non-clickable">
+                            <img src="{% static 'images/icons/discord-icon.png' %}" alt="Discord" width="32" height="32">
+                            <span class="account-username">
+                                {{ user.profile.discord }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Правая колонка -->
+        <div class="col-md-8">
+            <div class="card neumorphic-card">
+                <div class="card-body">
+                    <h4 class="card-title">Мои публикации</h4>
+                    
+                    {% for post in user.post_set.all %}
+                    <div class="post-item mb-3 p-3">
+                        <h5><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h5>
+                        <small class="text-muted">
+                            {{ post.date_posted|date:"d.m.Y" }} | 
+                            {{ post.comments.count }} комментариев
+                        </small>
+                    </div>
+                    {% empty %}
+                    <p>У вас пока нет публикаций.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

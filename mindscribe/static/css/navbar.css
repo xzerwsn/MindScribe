@@ -1,0 +1,206 @@
+/* Основные стили */
+:root {
+    --dark-bg: #19171b;
+    --primary: #75020f;
+    --secondary: #51080d;
+    --dark-accent: #2b0307;
+    --text-light: #ffffff;
+    --text-gray: #e0e0e0;
+}
+
+.neumorphic-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 5%;
+    background: var(--dark-bg);
+    box-shadow: 8px 8px 16px #0f0d0f, -8px -8px 16px #232129;
+    position: relative;
+}
+
+.navbar-brand a {
+    color: var(--text-light);
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(117, 2, 15, 0.5);
+}
+
+.navbar-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.navbar-links li {
+    margin: 0 12px;
+}
+
+.navbar-links a {
+    color: var(--text-gray);
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+}
+
+/* Неоморфизм эффекты для ссылок */
+.navbar-links a:not(.auth-btn):not(.dropbtn) {
+    background: var(--dark-bg);
+    box-shadow: 5px 5px 10px #0f0d0f, -5px -5px 10px #232129;
+}
+
+.navbar-links a:hover:not(.auth-btn):not(.dropbtn) {
+    box-shadow: inset 5px 5px 10px #0f0d0f, 
+                inset -5px -5px 10px #232129;
+    color: var(--text-light);
+}
+
+/* Кнопки авторизации */
+.auth-btn {
+    background: var(--primary);
+    box-shadow: 5px 5px 10px #0f0d0f, -3px -3px 8px #232129;
+    border-radius: 50px;
+    padding: 10px 25px !important;
+    font-weight: 600;
+}
+
+.auth-btn.register {
+    background: linear-gradient(145deg, #75020f, #51080d);
+}
+
+.auth-btn:hover {
+    box-shadow: inset 5px 5px 10px #51080d, 
+                inset -5px -5px 10px #990215;
+    transform: translateY(2px);
+}
+
+/* Выпадающее меню */
+.dropdown {
+    position: relative;
+}
+
+.dropbtn {
+    background: var(--secondary);
+    border-radius: 50px;
+    padding: 10px 25px !important;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: var(--dark-bg);
+    min-width: 180px;
+    box-shadow: 10px 10px 20px #0f0d0f, -5px -5px 15px #232129;
+    border-radius: 12px;
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    overflow: hidden;
+}
+
+.dropdown-content a, .logout {
+    display: block;
+    padding: 12px 20px;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+}
+
+.dropdown-content a:hover, .logout {
+    background: var(--dark-accent);
+    box-shadow: none;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Поисковая форма */
+.search-form {
+    display: flex;
+    margin-left: 25px;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 5px 5px 10px #0f0d0f, -3px -3px 8px #232129;
+}
+
+.search-input {
+    border: none;
+    padding: 12px 20px;
+    width: 250px;
+    background: var(--dark-bg);
+    color: var(--text-light);
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-btn {
+    background: var(--primary);
+    border: none;
+    padding: 0 20px;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: background 0.3s;
+}
+
+.search-btn:hover {
+    background: var(--secondary);
+}
+
+/* Адаптивность */
+.navbar-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+@media (max-width: 992px) {
+    .navbar-menu {
+        position: fixed;
+        top: 0;
+        right: -300px;
+        height: 100vh;
+        width: 280px;
+        background: var(--dark-bg);
+        box-shadow: -10px 0 30px #0f0d0f;
+        flex-direction: column;
+        padding-top: 80px;
+        transition: right 0.4s ease;
+        z-index: 1000;
+    }
+    
+    .navbar-links {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 20px;
+    }
+    
+    .navbar-links li {
+        margin: 15px 0;
+    }
+    
+    .search-form {
+        margin: 30px 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .navbar-toggle {
+        display: block;
+        z-index: 1100;
+    }
+    
+    .active .navbar-menu {
+        right: 0;
+    }
+}

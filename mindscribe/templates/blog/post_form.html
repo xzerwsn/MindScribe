@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2>{% if object %}Редактирование{% else %}Новый пост{% endif %}</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Основные поля -->
+            <div class="card-form-title">
+                <h4>
+                    Заголовок
+                </h4>
+                {{ form.title }}
+            </div>
+            <div class="card-form-content">
+                <h4>
+                    Контент
+                </h4>
+                {{ form.content }}
+            </div>
+            
+            <!-- Универсальное поле для медиа -->
+            <div class="form-group mt-4">
+                <label>Медиа-контент</label>
+                <div class="custom-file">
+                    {{ form.media_file }}
+                    <label class="custom-file-label" for="id_media_file">Выберите файл (фото, видео или GIF)</label>
+                </div>
+                <small class="form-text text-muted">
+                    Поддерживаются: JPG, PNG, GIF, SVG, MP4, WebM, AVI
+                </small>
+            </div>
+            
+            <!-- <input type="hidden" name="media_type" id="id_media_type"> -->
+            
+            <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('id_media_file').addEventListener('change', function() {
+    const file = this.files[0];
+    const mediaTypeInput = document.getElementById('id_media_type');
+    
+    if (file) {
+        const fileType = file.type.split('/')[0];
+        const extension = file.name.split('.').pop().toLowerCase();
+        
+        if (fileType === 'image') {
+            mediaTypeInput.value = extension === 'gif' ? 'gif' : 'image';
+        } else if (fileType === 'video') {
+            mediaTypeInput.value = 'video';
+        }
+    }
+});
+</script>
+{% endblock %}
