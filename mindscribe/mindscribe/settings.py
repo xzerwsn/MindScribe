@@ -169,3 +169,36 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+INSTALLED_APPS += ['csp']
+
+MIDDLEWARE += ['csp.middleware.CSPMiddleware']
+
+# Для разработки (более разрешительная политика)
+CONTENT_SECURITY_POLICY = {
+    'default-src': ["'self'"],
+    'script-src': [
+        "'self'",
+        "https://cdn.jsdelivr.net",
+        "https://code.jquery.com",
+        "'unsafe-inline'",  # Временное решение для разработки
+        "'unsafe-eval'"     # Для Bootstrap и других библиотек
+    ],
+    'style-src': [
+        "'self'",
+        "https://cdn.jsdelivr.net",
+        "https://fonts.googleapis.com",
+        "https://cdnjs.cloudflare.com",
+        "'unsafe-inline'"   # Разрешаем inline-стили
+    ],
+    'img-src': ["'self'", "data:", "https:"],
+    'font-src': [
+        "'self'",
+        "https://cdn.jsdelivr.net",
+        "https://fonts.gstatic.com",
+        "https://cdnjs.cloudflare.com"
+    ],
+    'connect-src': ["'self'"],
+    'frame-src': ["'none'"],
+    'object-src': ["'none'"]
+}

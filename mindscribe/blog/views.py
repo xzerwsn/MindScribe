@@ -3,8 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Post, Profile
-from .forms import PostForm, UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from .models import Post, Profile, Comment
+from .forms import PostForm, UserRegisterForm, UserUpdateForm, ProfileUpdateForm, CommentForm
 
 def home(request):
     featured_posts = Post.objects.filter(featured=True)[:3]  # Или другой логика выбора
@@ -15,7 +18,7 @@ def home(request):
 
 @login_required
 def profile(request):
-    return render(request, 'blog/profile.html')
+    return render(request, 'blog/profile/profile.html')
 
 @login_required
 def profile_edit(request):
@@ -42,20 +45,73 @@ def profile_edit(request):
         'u_form': u_form,
         'p_form': p_form
     }
-    return render(request, 'blog/profile_edit.html', context)
+    return render(request, 'blog/profile/profile_edit.html', context)
 
 class PostListView(ListView):
     model = Post
-    template_name = 'blog/post_list.html'
+    template_name = 'blog/posts/post_list.html'
     context_object_name = 'posts'
     paginate_by = 10
 
 class PostDetailView(DetailView):
     model = Post
+    template_name = 'blog/posts/post_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.filter(active=True)
+        context['comment_form'] = CommentForm()
+        return context
+    
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        obj.views += 1
+        obj.save()
+        return obj
+
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('post_detail', pk=post.pk)
+    return redirect('post_detail', pk=post.pk)
+
+@require_POST
+@csrf_exempt  # Только для тестирования, в production используйте правильную CSRF защиту
+def edit_comment(request, pk):
+    try:
+        comment = Comment.objects.get(pk=pk, author=request.user)
+        comment.text = request.POST.get('text', '')
+        comment.save()
+        return JsonResponse({
+            'status': 'success',
+            'text': comment.text,
+            'updated_date': comment.updated_date.strftime("%d.%m.%Y %H:%M")
+        })
+    except Comment.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Комментарий не найден'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user == comment.author or request.user == comment.post.author:
+        comment.delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'message': 'Недостаточно прав'})
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
+    template_name = 'blog/posts/post_form.html'
+    success_url = reverse_lazy('post_list')
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -63,7 +119,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class UserPostsView(LoginRequiredMixin, ListView):
     model = Post
-    template_name = 'blog/user_posts.html'
+    template_name = 'blog/profile/user_posts.html'
     context_object_name = 'posts'
     paginate_by = 10
 
@@ -73,7 +129,7 @@ class UserPostsView(LoginRequiredMixin, ListView):
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm  # Используем нашу форму вместо явного указания полей
-    template_name = 'blog/post_form.html'
+    template_name = 'blog/posts/post_form.html'
     
     def test_func(self):
         post = self.get_object()
@@ -81,7 +137,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    template_name = 'blog/post_confirm_delete.html'
+    template_name = 'blog/posts/post_confirm_delete.html'
     success_url = reverse_lazy('user_posts')
     
     def test_func(self):
@@ -96,10 +152,10 @@ def register(request):
             return redirect('login')
     else:
         form = UserRegisterForm()
-    return render(request, 'blog/register.html', {'form': form})
+    return render(request, 'blog/auth/register.html', {'form': form})
 
 def about(request):
-    return render(request, 'blog/about.html')
+    return render(request, 'blog/info/about.html')
 
 def contact(request):
-    return render(request, 'blog/contact.html')
+    return render(request, 'blog/info/contact.html')

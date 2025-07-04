@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+        <li class="breadcrumb-item active">Блог</li>
+    </ol>
+</nav>
+
+<h1>Последние публикации</h1>
+
+<div class="post-list">
+    {% for post in posts %}
+    <article class="post card mb-4">
+        <div class="post-media">
+            {% if post.media_file %}
+                {% if post.media_type == 'video' %}
+                <div class="video-container">
+                    <video class="media-content" autoplay loop muted playsinline controls>
+                        <source src="{{ post.media_file.url }}" type="video/mp4">
+                        <source src="{{ post.media_file.url }}" type="video/webm">
+                    </video>
+                </div>
+                {% else %}
+                <img src="{{ post.media_file.url }}" 
+                    alt="Медиа-контент" 
+                    class="media-content {% if post.media_type == 'gif' %}gif-media{% endif %}">
+                {% endif %}
+            {% endif %}
+        </div>
+        
+        <div class="card-body">
+            <div class="author-info">
+                <img src="{{ post.author.profile.image.url }}" alt="Автор" class="rounded-circle mr-2" width="40" height="40" style="object-fit: cover;">
+                <span class="d-block">{{ post.author.username }}</span>
+                <small class="text-muted">{{ post.published_date|date:"d.m.Y" }}</small>
+            </div>
+            
+            <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+            
+            <p class="card-text">{{ post.content|truncatechars:250 }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                
+                <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-outline">Читать далее</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+{% include 'include/pagination.html' %}
+{% endblock %}

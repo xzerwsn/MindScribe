@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Profile
+from .models import Post, Profile, Comment
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -16,6 +16,7 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['bio', 'image', 'github', 'vk', 'telegram', 'discord']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 3}),
+            'image': forms.FileInput(attrs={'class': 'custom-file-input'}),
             'github': forms.URLInput(attrs={'placeholder': 'https://github.com/username'}),
             'vk': forms.URLInput(attrs={'placeholder': 'https://vk.com/username'}),
             'telegram': forms.TextInput(attrs={'placeholder': '@username'}),
@@ -36,4 +37,16 @@ class PostForm(forms.ModelForm):
             'media_file': forms.FileInput(attrs={
                 'accept': '.jpg,.jpeg,.png,.gif,.svg,.mp4,.webm,.avi'
             })
+        }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('text',)
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Ваш комментарий...'
+            }),
         }

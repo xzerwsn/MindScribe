@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    /* Основные цвета */
+    :root {
+        --dark-bg: #19171b;
+        --primary: #75020f;
+        --primary-dark: #51080d;
+        --primary-darker: #2b0307;
+        --text-light: #f8f9fa;
+        --text-muted: #adb5bd;
+    }
+
+    /* Общие стили */
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-light);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Карточка в стиле неуморфизма */
+    .neumorphic-card {
+        background: var(--dark-bg);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 
+            8px 8px 16px rgba(0, 0, 0, 0.5),
+            -8px -8px 16px rgba(43, 3, 7, 0.2);
+        border: 1px solid rgba(117, 2, 15, 0.1);
+    }
+
+    /* Заголовок */
+    .card-title {
+        color: var(--text-light);
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Формы */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        display: block;
+        font-size: 0.9rem;
+    }
+
+    /* Поля ввода */
+    input[type="text"],
+    input[type="url"],
+    textarea,
+    .form-control {
+        background: var(--primary-darker);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 15px;
+        color: var(--text-light);
+        box-shadow: 
+            inset 3px 3px 5px rgba(0, 0, 0, 0.3),
+            inset -3px -3px 5px rgba(117, 2, 15, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    textarea:focus,
+    .form-control:focus {
+        outline: none;
+        box-shadow: 
+            inset 5px 5px 8px rgba(0, 0, 0, 0.4),
+            inset -5px -5px 8px rgba(117, 2, 15, 0.3),
+            0 0 0 2px rgba(117, 2, 15, 0.5);
+    }
+
+    /* Кастомный файловый инпут */
+    /* Стили для кастомной загрузки файла */
+    .custom-file-upload {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .file-upload-btn {
+        background: var(--primary-darker);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 15px;
+        color: var(--text-light);
+        box-shadow: 
+            3px 3px 5px rgba(0, 0, 0, 0.3),
+            -3px -3px 5px rgba(117, 2, 15, 0.2);
+        transition: all 0.3s ease;
+        display: block;
+        cursor: pointer;
+        text-align: center;
+        width: 100%;
+    }
+
+    .custom-file-upload input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    /* Скрываем все лишние элементы */
+    .custom-file-upload input[type="file"]::-webkit-file-upload-button,
+    .custom-file-upload input[type="file"]::before,
+    .custom-file-upload input[type="file"]::after {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    .current-avatar {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        padding: 5px 0;
+    }
+
+    .current-avatar a {
+        color: var(--text-light);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .current-avatar a:hover {
+        color: var(--primary);
+    }
+
+    /* Кнопки */
+    .btn {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 
+            5px 5px 10px rgba(0, 0, 0, 0.3),
+            -5px -5px 10px rgba(117, 2, 15, 0.2);
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: var(--text-light);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.4),
+            -3px -3px 6px rgba(117, 2, 15, 0.3);
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--primary);
+    }
+
+    .btn-outline-secondary:hover {
+        background: rgba(117, 2, 15, 0.1);
+        color: var(--text-light);
+    }
+
+    /* Стили для превью аватара */
+    .avatar-preview-container {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+    }
+
+    .avatar-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 
+            3px 3px 5px rgba(0, 0, 0, 0.3),
+            -3px -3px 5px rgba(117, 2, 15, 0.2);
+    }
+
+    .avatar-preview-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary-darker);
+        color: var(--text-muted);
+        border-radius: 10px;
+        font-size: 2rem;
+        box-shadow: 
+            3px 3px 5px rgba(0, 0, 0, 0.3),
+            -3px -3px 5px rgba(117, 2, 15, 0.2);
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .align-items-start {
+        align-items: flex-start;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+
+    .mr-3 {
+        margin-right: 1rem;
+    }
+
+    .mt-2 {
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card neumorphic-card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Редактирование профиля</h2>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Форма пользователя -->
+                        <div class="form-group">
+                            <label>Имя</label>
+                            {{ u_form.first_name }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Фамилия</label>
+                            {{ u_form.last_name }}
+                        </div>
+                        
+                        <!-- Форма профиля -->
+                        <div class="form-group">
+                            <label>О себе</label>
+                            {{ p_form.bio }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Аватар</label>
+                            <div class="d-flex align-items-start">
+                                <div class="flex-grow-1 mr-3">
+                                    <div class="custom-file-upload">
+                                        <label for="id_image" class="file-upload-btn">
+                                            Выберите файл
+                                        </label>
+                                        {{ p_form.image }}
+                                    </div>
+                                    {% if p_form.image.value %}
+                                        <div class="current-avatar mt-2">
+                                            <small>Текущий файл: {{ p_form.image.value }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="avatar-preview-container">
+                                    {% if p_form.image.value %}
+                                        <img src="/media/{{ p_form.image.value }}" 
+                                            class="avatar-preview img-thumbnail" 
+                                            alt="Текущий аватар"
+                                            id="avatarPreview">
+                                    {% else %}
+                                        <div class="avatar-preview-placeholder img-thumbnail">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>GitHub</label>
+                            {{ p_form.github }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>VK</label>
+                            {{ p_form.vk }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Telegram</label>
+                            {{ p_form.telegram }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Discord</label>
+                            {{ p_form.discord }}
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">Обновить</button>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary ml-2">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"][id="id_image"]');
+    const avatarPreview = document.getElementById('avatarPreview');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    if (!avatarPreview) {
+                        const placeholder = document.querySelector('.avatar-preview-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = `<img src="${event.target.result}" class="avatar-preview" alt="Новый аватар">`;
+                        }
+                    } else {
+                        avatarPreview.src = event.target.result;
+                    }
+                };
+                
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
