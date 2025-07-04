@@ -38,16 +38,16 @@ npm start
 
 Теперь вы готовы использовать MindScribe!
 
-MindScribe - A Place Where Thoughts Take Shape
+# MindScribe - A Place Where Thoughts Take Shape
 Welcome to MindScribe! This project is designed to help users transform their thoughts into written form, facilitating the writing process and creative thinking.
 ![Image](imgff.jpg)
 
-##Why Use MindScribe?
+## Why Use MindScribe?
 - **User-Friendly**: The simplicity of the interface makes note creation easy and intuitive.
 - **Thought Organization**: It allows you to structure your ideas, making them accessible and organized.
 - **Creativity**: Methods for visualizing thoughts will help you unlock the full potential of your imagination and creative thinking.
 - 
-##How to Run the Project
+## How to Run the Project
 
 1. **Clone the Repository**:
    
